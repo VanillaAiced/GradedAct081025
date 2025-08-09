@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Twitter Clone</title>
+    <!-- Use Tailwind CSS for a clean, modern look -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tweet-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tweet-image {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-xl w-full">
+        <!-- Tweet Form Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Post a Tweet</h1>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                <div>
+                    <!-- Use Tailwind classes for form styling -->
+                    <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700">Tweet Content</label>
+                    {{ form.content }}
+                </div>
+
+                <div>
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">Upload Image (Optional)</label>
+                    {{ form.image }}
+                </div>
+
+                <!-- Display form errors -->
+                {% if form.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out font-semibold">
+                    Post Tweet
+                </button>
+            </form>
+        </div>
+
+        <!-- Tweet List Section -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Recent Tweets</h2>
+            {% for tweet in tweets %}
+                <div class="tweet-card">
+                    <p class="text-gray-700 text-base mb-2">{{ tweet.content }}</p>
+                    {% if tweet.image %}
+                        <img src="{{ tweet.image.url }}" alt="Tweet image" class="tweet-image">
+                    {% endif %}
+                    <p class="text-sm text-gray-500 mt-2">{{ tweet.created_at|date:"F d, Y h:i A" }}</p>
+                </div>
+            {% empty %}
+                <p class="text-center text-gray-500">No tweets posted yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
